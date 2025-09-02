@@ -24,6 +24,25 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
+				// Medical IoMT Colors
+				medical: {
+					primary: 'hsl(var(--medical-primary))',
+					'primary-light': 'hsl(var(--medical-primary-light))',
+					'primary-dark': 'hsl(var(--medical-primary-dark))',
+				},
+				status: {
+					safe: 'hsl(var(--status-safe))',
+					warning: 'hsl(var(--status-warning))',
+					critical: 'hsl(var(--status-critical))',
+					info: 'hsl(var(--status-info))',
+				},
+				chart: {
+					pressure: 'hsl(var(--chart-pressure))',
+					flow: 'hsl(var(--chart-flow))',
+					temperature: 'hsl(var(--chart-temperature))',
+				},
+				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
