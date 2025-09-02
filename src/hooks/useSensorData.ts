@@ -39,10 +39,60 @@ export interface AnomalyAlert {
   };
 }
 
+interface KPI {
+  label: string;
+  value: string;
+  unit: string;
+  status: 'normal' | 'warning' | 'critical';
+  trend: 'up' | 'down' | 'stable';
+  change: string;
+}
+
+interface KPIMetrics {
+  pressure: KPI;
+  flow: KPI;
+  temperature: KPI;
+  uptime: KPI;
+}
+
 export const useSensorData = () => {
   const [readings, setReadings] = useState<SensorReading[]>([]);
   const [alerts, setAlerts] = useState<AnomalyAlert[]>([]);
   const [isConnected, setIsConnected] = useState(true);
+  const [kpis, setKpis] = useState<KPIMetrics>({
+    pressure: {
+      label: 'System Pressure',
+      value: '480.5',
+      unit: 'kPa',
+      status: 'normal',
+      trend: 'stable',
+      change: '+0.2%'
+    },
+    flow: {
+      label: 'Flow Rate',
+      value: '18.7',
+      unit: 'L/min',
+      status: 'normal',
+      trend: 'up',
+      change: '+1.3%'
+    },
+    temperature: {
+      label: 'Temperature',
+      value: '22.4',
+      unit: '°C',
+      status: 'normal',
+      trend: 'stable',
+      change: '0.0%'
+    },
+    uptime: {
+      label: 'System Uptime',
+      value: '99.8',
+      unit: '%',
+      status: 'normal',
+      trend: 'stable',
+      change: '+0.1%'
+    }
+  });
 
   useEffect(() => {
     // Simulate real-time sensor data
@@ -126,19 +176,48 @@ export const useSensorData = () => {
         });
       }
 
+      // Update KPIs dynamically
+      const avgPressure = readings.slice(-10).reduce((acc, r) => acc + r.sensors.pressure_kpa, 0) / Math.max(readings.slice(-10).length, 1);
+      const avgFlow = readings.slice(-10).reduce((acc, r) => acc + r.sensors.flow_lpm, 0) / Math.max(readings.slice(-10).length, 1);
+      const avgTemp = readings.slice(-10).reduce((acc, r) => acc + r.sensors.temperature_c, 0) / Math.max(readings.slice(-10).length, 1);
+      
+      setKpis(prev => ({
+        pressure: {
+          ...prev.pressure,
+          value: avgPressure.toFixed(1),
+          status: avgPressure < 450 ? 'critical' : avgPressure < 470 ? 'warning' : 'normal',
+          trend: Math.random() > 0.5 ? 'stable' : Math.random() > 0.5 ? 'up' : 'down',
+          change: `${Math.random() > 0.5 ? '+' : ''}${(Math.random() * 2 - 1).toFixed(1)}%`
+        },
+        flow: {
+          ...prev.flow,
+          value: avgFlow.toFixed(1),
+          status: 'normal',
+          trend: Math.random() > 0.6 ? 'up' : 'stable',
+          change: `+${(Math.random() * 2).toFixed(1)}%`
+        },
+        temperature: {
+          ...prev.temperature,
+          value: avgTemp.toFixed(1),
+          status: avgTemp > 25 ? 'warning' : 'normal',
+          trend: 'stable',
+          change: '0.0%'
+        },
+        uptime: {
+          ...prev.uptime,
+          value: (isConnected ? 99.8 : 98.5).toFixed(1),
+          status: isConnected ? 'normal' : 'critical',
+          trend: 'stable',
+          change: '+0.1%'
+        }
+      }));
+
       // Simulate occasional connection issues
       setIsConnected(Math.random() > 0.02); // 2% chance of disconnection
     }, 2000); // New reading every 2 seconds
 
     return () => clearInterval(interval);
   }, []);
-
-  const kpis = {
-    activeNodes: new Set(readings.slice(-10).map(r => r.nodeId)).size,
-    avgPressure: readings.slice(-10).reduce((acc, r) => acc + r.sensors.pressure_kpa, 0) / Math.max(readings.slice(-10).length, 1),
-    alertRate: alerts.filter(a => Date.now() - new Date(a.timestamp).getTime() < 3600000).length, // Last hour
-    systemUptime: isConnected ? 99.8 : 98.5,
-  };
 
   return {
     readings,

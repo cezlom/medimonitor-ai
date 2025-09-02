@@ -2,45 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Medical IoMT Dashboard Design System */
+/* Modern IoMT Dashboard Design System */
 
 @layer base {
   :root {
-    /* Core Medical Colors */
-    --background: 210 17% 98%;
-    --foreground: 210 24% 16%;
+    /* Modern Glass Background */
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
     
-    /* Medical Blue Palette */
-    --medical-primary: 210 92% 45%;
-    --medical-primary-light: 210 92% 65%;
-    --medical-primary-dark: 210 92% 25%;
+    /* Medical Blue Palette - More Vibrant */
+    --medical-primary: 217 91% 60%;
+    --medical-primary-light: 217 91% 75%;
+    --medical-primary-dark: 217 91% 35%;
+    --medical-accent: 142 76% 50%;
     
-    /* Status Colors */
-    --status-safe: 142 76% 36%;
-    --status-warning: 38 92% 50%;
-    --status-critical: 0 84% 60%;
-    --status-info: 210 92% 45%;
+    /* Status Colors - Enhanced */
+    --status-safe: 142 76% 45%;
+    --status-warning: 38 92% 60%;
+    --status-critical: 0 84% 65%;
+    --status-info: 217 91% 60%;
     
-    /* Data Visualization */
-    --chart-pressure: 210 92% 45%;
-    --chart-flow: 142 76% 36%;
-    --chart-temperature: 38 92% 50%;
+    /* Data Visualization - Modern Palette */
+    --chart-pressure: 217 91% 60%;
+    --chart-flow: 142 76% 45%;
+    --chart-temperature: 38 92% 60%;
     
-    /* Surface Colors */
-    --card-bg: 0 0% 100%;
-    --panel-bg: 210 17% 98%;
-    --header-bg: 210 24% 16%;
+    /* Glass Surface Colors */
+    --card-bg: 222 84% 4.9%;
+    --panel-bg: 222 47% 11%;
+    --header-bg: 222 84% 4.9%;
+    --glass-bg: 222 47% 11% / 0.8;
+    --glass-border: 217 91% 60% / 0.2;
     
-    /* Gradients */
-    --gradient-medical: linear-gradient(135deg, hsl(var(--medical-primary)), hsl(var(--medical-primary-light)));
+    /* Modern Gradients */
+    --gradient-medical: linear-gradient(135deg, hsl(var(--medical-primary)), hsl(var(--medical-primary-light)), hsl(var(--medical-accent)));
     --gradient-status: linear-gradient(90deg, hsl(var(--status-safe)), hsl(var(--status-info)));
+    --gradient-glass: linear-gradient(135deg, hsl(var(--glass-bg)), hsl(222 47% 11% / 0.4));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-primary) / 0.9), hsl(var(--medical-accent) / 0.7));
     
-    /* Shadows */
-    --shadow-medical: 0 4px 20px -4px hsl(var(--medical-primary) / 0.2);
-    --shadow-card: 0 2px 10px -2px hsl(210 24% 16% / 0.1);
+    /* Advanced Shadows */
+    --shadow-medical: 0 8px 32px -8px hsl(var(--medical-primary) / 0.3);
+    --shadow-glass: 0 8px 32px -8px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 20px hsl(var(--medical-primary) / 0.4);
+    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.2);
     
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Smooth Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     /* Shadcn compatibility */
     --card: hsl(var(--card-bg));
@@ -64,25 +72,26 @@
   }
 
   .dark {
-    --background: hsl(var(--header-bg));
+    /* Already dark by default - keeping consistency */
+    --background: 222 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: hsl(var(--header-bg));
+    --card: hsl(var(--panel-bg));
     --card-foreground: 210 40% 98%;
-    --popover: hsl(var(--header-bg));
+    --popover: hsl(var(--panel-bg));
     --popover-foreground: 210 40% 98%;
-    --primary: hsl(var(--medical-primary-light));
-    --primary-foreground: hsl(var(--header-bg));
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: hsl(var(--medical-primary));
+    --primary-foreground: 222 84% 4.9%;
+    --secondary: 222 47% 11%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 222 47% 11%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 222 47% 11%;
     --accent-foreground: 210 40% 98%;
     --destructive: hsl(var(--status-critical));
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: hsl(var(--medical-primary-light));
+    --border: 222 47% 11%;
+    --input: 222 47% 11%;
+    --ring: hsl(var(--medical-primary));
   }
 }
 
@@ -92,6 +101,26 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(var(--medical-primary) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, hsl(var(--medical-accent) / 0.1) 0%, transparent 50%);
+  }
+  
+  /* Glass morphism utilities */
+  .glass {
+    @apply backdrop-blur-xl bg-gradient-to-br;
+    background: var(--gradient-glass);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  /* Modern card styling */
+  .modern-card {
+    @apply glass rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:glow;
   }
 }

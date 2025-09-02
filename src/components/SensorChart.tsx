@@ -1,5 +1,16 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Area, 
+  AreaChart 
+} from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { Activity } from 'lucide-react';
 import { SensorReading } from '@/hooks/useSensorData';
 
 interface SensorChartProps {
@@ -18,54 +29,86 @@ export const SensorChart: React.FC<SensorChartProps> = ({
   color,
 }) => {
   const data = readings.slice(-20).map((reading, index) => ({
-    time: new Date(reading.timestamp).toLocaleTimeString(),
-    value: reading.sensors[metric],
+    timestamp: reading.timestamp,
+    [metric]: reading.sensors[metric],
     index,
   }));
 
-  const currentValue = readings.length > 0 ? readings[readings.length - 1].sensors[metric] : 0;
-
   return (
-    <Card className="bg-white shadow-lg border-0">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <div className="text-right">
-            <div className="text-2xl font-bold" style={{ color }}>
-              {currentValue.toFixed(1)}
-            </div>
-            <div className="text-sm text-muted-foreground">{unit}</div>
-          </div>
+    <div className="modern-card p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 rounded-xl bg-gradient-to-br from-chart-pressure/20 to-chart-pressure/10">
+          <Activity className="h-5 w-5 text-chart-pressure" />
         </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+        <h2 className="text-xl font-semibold text-foreground">
+          {title}
+        </h2>
+        <div className="ml-auto">
+          <Badge variant="outline" className="glass border-medical-primary/30 text-medical-primary animate-pulse">
+            Live
+          </Badge>
+        </div>
+      </div>
+      
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id={`gradient-${metric}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+                <stop offset="95%" stopColor={color} stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="hsl(var(--border))" 
+              opacity={0.3}
+            />
             <XAxis 
-              dataKey="time" 
-              tick={{ fontSize: 12 }}
-              stroke="#888"
+              dataKey="timestamp" 
+              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
             />
             <YAxis 
-              tick={{ fontSize: 12 }}
-              stroke="#888"
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
             />
             <Tooltip 
-              formatter={(value: number) => [`${value.toFixed(2)} ${unit}`, title]}
-              labelStyle={{ color: '#333' }}
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '12px',
+                boxShadow: 'var(--shadow-glass)'
+              }}
+              labelFormatter={(value) => new Date(value).toLocaleString()}
             />
-            <Line
-              type="monotone"
-              dataKey="value"
+            <Area 
+              type="monotone" 
+              dataKey={metric} 
               stroke={color}
-              strokeWidth={2}
-              dot={{ fill: color, strokeWidth: 2, r: 3 }}
-              activeDot={{ r: 5, stroke: color, strokeWidth: 2 }}
+              strokeWidth={3}
+              fill={`url(#gradient-${metric})`}
+              dot={{ fill: color, strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, stroke: color, strokeWidth: 2, fill: 'white' }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </div>
+      
+      <div className="mt-6 flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Last updated: {new Date().toLocaleTimeString()}
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-foreground">
+            {readings[readings.length - 1]?.[metric] || readings[readings.length - 1]?.sensors[metric]?.toFixed(1) || '0.0'}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {unit}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

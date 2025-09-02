@@ -54,39 +54,45 @@ export const ActuatorControl: React.FC = () => {
   };
 
   return (
-    <Card className="bg-white shadow-lg border-0">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-foreground">
+    <div className="modern-card p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 rounded-xl bg-gradient-to-br from-medical-primary/20 to-medical-primary/10">
           <Settings className="h-5 w-5 text-medical-primary" />
+        </div>
+        <h2 className="text-xl font-semibold text-foreground">
           Actuator Control Center
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {actuators.map((actuator) => (
+        </h2>
+      </div>
+      
+      <div className="space-y-6">
+        {actuators.map((actuator, index) => (
           <div
             key={actuator.id}
-            className="p-4 rounded-lg border border-gray-200 hover:border-medical-primary/30 transition-colors"
+            className="glass p-5 rounded-xl border border-white/10 hover:border-medical-primary/30 transition-all duration-300 group"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="font-medium text-foreground">{actuator.name}</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="space-y-1">
+                <h3 className="font-semibold text-foreground">{actuator.name}</h3>
                 <p className="text-sm text-muted-foreground">
                   {actuator.id} • {actuator.location}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge className={getStatusColor(actuator.status)}>
+              <div className="flex items-center gap-3">
+                <Badge className={`${getStatusColor(actuator.status)} border-0`}>
                   {actuator.status}
                 </Badge>
-                <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
-                  {actuator.position}%
-                </span>
+                <div className="glass px-3 py-1 rounded-lg">
+                  <span className="text-sm font-mono font-bold text-medical-primary">
+                    {actuator.position}%
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
+                <label className="text-sm font-medium text-foreground mb-3 block">
                   Position Control
                 </label>
                 <Slider
@@ -98,30 +104,30 @@ export const ActuatorControl: React.FC = () => {
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleEmergencyStop(actuator.id)}
-                  className="flex items-center gap-1"
+                  className="glass border-status-critical/30 text-status-critical hover:bg-status-critical/10 hover:border-status-critical/50 transition-all duration-300"
                 >
-                  <Power className="h-3 w-3" />
+                  <Power className="h-3 w-3 mr-1" />
                   Stop
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePositionChange(actuator.id, [100])}
-                  className="flex items-center gap-1"
+                  className="glass border-medical-primary/30 text-medical-primary hover:bg-medical-primary/10 hover:border-medical-primary/50 transition-all duration-300"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  <RotateCcw className="h-3 w-3 mr-1" />
                   Full Open
                 </Button>
               </div>
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
